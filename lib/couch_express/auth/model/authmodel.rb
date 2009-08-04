@@ -5,19 +5,23 @@ module CouchExpress::AuthModel
     klass.class_eval do
       property :authentication, :default => {}
       extend ClassMethods
+      include InstanceMethods
     end  
-  end
+  end 
   
-  module ClassMethods
-    def generate_hash( str )
+  module InstanceMethods 
+    def generate_hash( string )
       Digest::SHA1.hexdigest(string)
     end
-    
+  end # InstanceMethods  
+  
+  module ClassMethods
     def auth_strategies
       @auth_strategies ||= []
     end 
     
     def add_auth_strategy( sym )
+      auth_strategies # to initialize
       @auth_strategies << sym
     end     
   end # ClassMethods    

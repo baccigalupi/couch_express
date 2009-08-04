@@ -16,6 +16,7 @@ module CouchExpress
       if key
         prev[key] != self[key]
       else
+        puts prev.inspect
         prev_keys = prev.keys.sort
         current_keys = self.keys.sort
         has_changed = false
