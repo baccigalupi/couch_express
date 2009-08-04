@@ -63,6 +63,16 @@ module CouchExpress
     
     # self.create and self.create! have been rolled into CouchRest
     
+    # beware! this only works for finding a single id. So, AR style finds like
+    #  User.find([id_1, id_2, ...]) # WON'T WORK !!!
+    #  User.find(:all, :conditions => {...}) # WON'T WORK !!!
+    # This has been added to make the resources typically generated work relatively painlessly
+    # Correct Usage:
+    #   User.find( 'id...' ) # Same as User.get( 'id...' )
+    def self.find( id ) 
+      self.get( id )
+    end  
+    
     # Changed? ----------------------------- 
     #
     # Lazy lightweight implementation of record changed facility. 
