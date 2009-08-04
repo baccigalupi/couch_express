@@ -1,6 +1,68 @@
 module CouchExpress
   class Model < CouchRest::ExtendedDocument 
     
+    # Param Protection ---------------------
+    # In CouchRest, the ExtendedDocument is very public. Anything that is initialized in is 
+    # made part of the data, unless there exists some setter methods that catch the initialization params
+    # and process the data differently. The methods in this section hope to add some protections and also
+    # isolate the params passed in as an instance variable for reference throughout the initialization
+    # setting and getting.
+    
+    attr_accessor :express_params 
+    
+    def add_to_params( key, value )
+      self.express_params ||= {}
+      express_params[key] = value
+    end  
+    
+    def initialize( hash={} )
+      self.express_params = (hash || {}).dup # because the extended doc seems to consume the hash
+      super( hash )
+    end
+    
+    def self.update_attributes_without_saving( hash={} )
+      self.express_params = (hash || {}).dup
+      super( hash )
+    end     
+     
+    
+    save_callback :after, :clear_wrappers 
+    def clear_wrappers
+      self.express_params = nil
+      @prev = nil
+      true # so the process doesn't stop
+    end
+    
+    # Equality Fix ---------------------------
+    # for some reason == comparison between seemingly identical objects is failing
+    def ==( doc )
+      doc_keys = doc.keys.sort
+      current_keys = self.keys.sort
+      is_same = true
+      # check to see if the keys match
+      if doc_keys != current_keys
+        is_same = false
+      else # otherwise check each key value pair
+        doc_keys.each do |k|
+          if self[k].class == Time
+            # for whatever reason time comparisons are failing, maybe it is a micro-second issue
+            is_same = is_same && doc[k].to_s == self[k].to_s
+          else
+            is_same = is_same && doc[k] == self[k]
+          end  
+          break unless is_same
+        end
+      end
+      is_same 
+    end    
+    
+    # Conveniences -------------------------
+    def self.delete_all
+      all.each {|doc| doc.destroy }
+    end
+    
+    # self.create and self.create! have been rolled into CouchRest
+    
     # Changed? ----------------------------- 
     #
     # Lazy lightweight implementation of record changed facility. 
@@ -11,30 +73,16 @@ module CouchExpress
     # Usage: 
     #  my_model.changed? # checks to see if any attributes were added, deleted or changed
     #  my_model.changed?( :attribute ) # checks to see if an particular attribute changed   save_callback :before, :clear_prev
-    
+    #
     def changed?( key=nil )
       if key
-        prev[key] != self[key]
+        if prev[key].class == Time || self[key].class == Time
+          prev[key].to_s != self[key].to_s
+        else  
+          prev[key] != self[key]
+        end  
       else
-        puts prev.inspect
-        prev_keys = prev.keys.sort
-        current_keys = self.keys.sort
-        has_changed = false
-        # check to see if the keys match
-        if prev_keys != current_keys
-          has_changed = true
-        else # otherwise check each key value pair
-          prev_keys.each do |k|
-            if self[k].class == Time
-              # for whatever reason time comparisons are failing, maybe it is a micro-second issue
-              has_changed = has_changed || prev[k].to_s != self[k].to_s
-            else
-              has_changed = has_changed || prev[k] != self[k]
-            end  
-            break if has_changed
-          end
-        end
-        has_changed    
+        self != prev    
       end    
     end
 
@@ -42,10 +90,6 @@ module CouchExpress
       def prev
         @prev ||= self.class.get("#{self.id}")
       end
-    
-      def clear_prev
-        @prev = nil
-      end 
     public  
     
     
