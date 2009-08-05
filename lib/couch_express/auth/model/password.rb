@@ -35,7 +35,7 @@ module CouchExpress::AuthModel::Password
     def authenticate_by_password( password )
       crypted = self.auth && self.auth['password'] && self.auth['password']['encrypted_password']
       encrypt( password ) == crypted ? self : false 
-    end  
+    end
     
     def password=( p )
       if password_valid?( p )
@@ -60,6 +60,18 @@ module CouchExpress::AuthModel::Password
         self.password = p  
       end    
     end  
+    
+    # these two getter methods are needed by forms_for helper
+    # might be simpler to implement a method missing dealy
+    
+    def password
+      express_params[:password]
+    end    
+    
+    def password_confirmation
+      express_params[:password_confirmation]
+    end  
+      
      
     protected
       # generate_hash method is defined in CouchExpress::AuthModel::General 

@@ -100,7 +100,13 @@ module CouchExpress
       def prev
         @prev ||= self.class.get("#{self.id}")
       end
-    public  
+    public 
+    
+    if defined?( Rails )
+      def logger
+        RAILS_DEFAULT_LOGGER
+      end  
+    end   
     
     
   end # Model
