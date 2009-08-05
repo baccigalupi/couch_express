@@ -30,7 +30,7 @@ module CouchExpress
             errors.add( field, msg ) 
           end  
         end
-        return [ false, 'Some validation errors while setting attribute values']  
+        return [ false, nil]  
       else
         true
       end    

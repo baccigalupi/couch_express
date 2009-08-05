@@ -1,5 +1,5 @@
 # Most of this has been ripped from Railties, with some deletions
-class CouchExpressResourceGenerator < Rails::Generator::NamedBase
+class CouchExpressControllerGenerator < Rails::Generator::NamedBase
   attr_reader   :controller_name,
                 :controller_class_path,
                 :controller_file_path,
@@ -38,21 +38,9 @@ class CouchExpressResourceGenerator < Rails::Generator::NamedBase
     record do |m|
       # Check for class naming collisions.
       m.class_collisions("#{controller_class_name}Controller")
-      m.class_collisions(class_name)
-
-      # Controller, specs and models directories.
-      m.directory(File.join('app/models', class_path))
-      m.directory(File.join('app/controllers', controller_class_path))
-      m.directory File.join('spec/models', class_path)
-      
-      # Model class and spec. 
-      m.template( 'couch_express_model:couch_express_model.rb',  
-        File.join('app/models', class_path, "#{file_name}.rb") 
-      )
-      m.template( 'rspec_model:model_spec.rb',                   
-        File.join('spec/models', class_path, "#{file_name}_spec.rb")
-      )  
-      m.template( 'couch_express_controller:couch_express_controller.rb',                 
+      m.directory(File.join('app/controllers', controller_class_path ))
+      m.directory(File.join('app/views', controller_class_path ))
+      m.template( 'couch_express_controller.rb',                 
         File.join('app/controllers', controller_class_path, "#{controller_file_name}_controller.rb" )
       )  
       
