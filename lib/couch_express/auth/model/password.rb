@@ -109,7 +109,7 @@ module CouchExpress::AuthModel::Password
     
       def encrypt_password( p )
         self.auth['password']['encrypted_password'] = encrypt( p )
-      end   
+      end
     public     
     
   end # InstanceMethods

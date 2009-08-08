@@ -19,7 +19,7 @@ module CouchExpress::AuthModel
     end
     
     def authable?
-      !self.auth.keys.empty? 
+      !(self.auth.keys - ['remember_me']).empty? 
     end 
     
     def has_authentication
