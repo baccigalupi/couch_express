@@ -1,13 +1,38 @@
-CouchSpring
-===========
+CouchExpress
+============
+CouchExpress is a collection of goodies to make using CouchDB in Rails (and possibly Ruby) easier. The core of the plugin is the CouchRest gem/plugin included in this library. (No need to install it too.) The plugin provides a wrapper around CouchRest's ExtendedDocument, a number of generators and some tools for building a couch based authentication system. For a drop in Couch Auth Engine, see the obtusely named CouchAuthEngine.
 
-Introduction goes here.
+Usage
+===== 
+By default only the a CouchExpress::Model and a CouchExpress::ValidatedModel are loaded into application memory.  You can start using them by with generate
 
+  script/generate couch_express_model ModelName
+  
+This will generate a CouchExpress::ValidateModel with for 'ModelName'. It will also generate a rspec model file for this model! If you don't use rspec, the generators will make you unhappy, demanding that rspec be installed and then making rspec madness. You could probably add to this plugin so that it takes a testing method and builds other kinds of testing documents. Generators aren't hard. You can do it!  
+   
+Controllers and Resource Scaffolds can also be generated:
+ 
+  script/generate couch_express_controller
+  script/generate couch_express_resource
+  
+Only the model spec is created, because everyone seems to be using Cucumber for their combined controller/view testing. 
 
-Example
-=======
+If you feel like rolling your own model just open a file and create a class that inherits from CouchExpress::ValidatedModel (or CouchExpress::Model). 
 
-Example goes here.
+  class SimpleStuff < CouchExpress::Model
+    property :basics
+  end  
 
+The hidden part of the plugin gives you a whole bunch of tools for building authentication. You can check out the available parts in the plugins lib/couch_express/auth/ directory. These will have to be required in and then where necessary included. Just as with testing, there are lots of opinions. 
 
-Copyright (c) 2009 [name of plugin creator], released under the MIT license
+The controller request side of the authentication user Warden, a gem that drops the authentication down to the rack level so that you can share sessions across any number of rails apps. How cool is that! Unfortunately, there is scant documentation. It is also not being used in other open source projects, so you can't figure by example. There really aren't that many specs either That being said, the little auth section can build out your authentication. Or you can just grab the engine: CouchAuthEngine. To roll your own here you will need, (for the controller side of things), Warden and RailsWarden. Both can be found on github. 
+
+Here are some things you can do in auth land:
+
+* Generate a user model 'script/generate couch_auth_model User'. This will give you a User model with password and remember_me cookie authentication, plus rspec tests for all of this. 
+* You can grab some useful controller methods to require and include in your controllers. Unsurprisingly these are located in lib/couch_express/auth/controller directory within the plugin. 
+* Load up strategies into your Rails Warden Manager. When you install RailsWarden, the Readme cites an excellent Manager initialization sample. You can load in strategies by requiring and including the module within the Warden::Strategies.add block.  
+
+Want more? Roll up your sleeves, or learn to ask nice.
+
+Copyright (c) 2009 Kane Baccigalupi, released under the MIT license

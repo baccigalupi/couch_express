@@ -1,3 +1,0 @@
-module CouchExpress::ControllerAuth 
-  
-end  
