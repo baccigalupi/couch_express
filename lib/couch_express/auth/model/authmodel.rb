@@ -3,7 +3,7 @@ require 'digest/sha1'
 module CouchExpress::AuthModel 
   def self.included( klass ) 
     klass.class_eval do
-      property :auth, :default => {}
+      property :auth, :default => {'verified' => false}
       
       extend ClassMethods
       include InstanceMethods 
@@ -19,12 +19,25 @@ module CouchExpress::AuthModel
     end
     
     def authable?
-      !(self.auth.keys - ['remember_me']).empty? 
+      !(self.auth.keys - ['remember_me', 'temporary_token', 'verified']).empty? 
     end 
     
     def has_authentication
       authable? ? true : ['false', 'must have one valid authentication method']
-    end  
+    end
+    
+    def verify!
+      verify
+      save
+    end
+    
+    def verify
+      self.auth['verified'] = true
+    end
+    
+    def verified? 
+      self.auth['verified']
+    end        
   end # InstanceMethods  
   
   module ClassMethods

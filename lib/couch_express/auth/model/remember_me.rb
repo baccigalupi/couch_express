@@ -10,7 +10,7 @@ module CouchExpress::AuthModel::RememberMe
       view_by :remember_me_token,
       :map => 
         "function(doc) {
-          if( doc['couchrest-type'] == '#{RailsWarden.default_user_class}' && 
+          if( doc['couchrest-type'] == 'User' && 
               doc.auth && doc.auth.remember_me && doc.auth.remember_me.token ){
             emit( doc.auth.remember_me.token, null ); 
           }                           
