@@ -1,3 +1,4 @@
+RAILS_ROOT = File.dirname(__FILE__) 
 # get CouchRest code
 Dir["#{File.dirname(__FILE__)}/../lib/couchrest/lib/couchrest"].each {|f| require f}
 # get CouchExpress code

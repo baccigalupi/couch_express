@@ -1,5 +1,9 @@
 module CouchExpress
   class Model < CouchRest::ExtendedDocument 
+    if url = CouchExpress.database_url
+      use_database url
+    end
+    
     
     # Param Protection ---------------------
     # In CouchRest, the ExtendedDocument is very public. Anything that is initialized in is 

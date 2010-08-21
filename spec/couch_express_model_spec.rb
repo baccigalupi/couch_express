@@ -86,5 +86,14 @@ describe CouchExpress::Model do
       @model[:prev].should == nil
     end  
   end          
+
+  describe 'using database config by default' do
+    it 'should automatically use the database configuration for development if it exists' do
+      class AutoDatabase < CouchExpress::Model
+      end
+      
+      AutoDatabase.database.should == "http://localhost:5984/couch_express" 
+    end
+  end
 end
 
